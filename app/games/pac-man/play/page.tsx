@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useState, useCallback, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useUser } from '@/app/context/UserContext';
+import MobileGamepad from '@/components/MobileGamepad';
 
 const PacManGame = dynamic(() => import('@/components/games/PacManGame'), {
   ssr: false,
@@ -78,48 +79,52 @@ export default function PacManPlay() {
     });
   }
 
+  const keyMap = { up: 'w', down: 's', left: 'a', right: 'd' };
+
   return (
     <div className="av-player fade-in">
-      <div className="player-hud">
-        <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
-          <div className="hud-stat">
-            <div className="l">Jugador</div>
-            <div className="v" style={{ color: 'var(--ink)' }}>
-              {username ?? 'INVITADO'}
+      <div className="hidden md:block">
+        <div className="player-hud">
+          <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
+            <div className="hud-stat">
+              <div className="l">Jugador</div>
+              <div className="v" style={{ color: 'var(--ink)' }}>
+                {username ?? 'INVITADO'}
+              </div>
+            </div>
+            <div className="hud-stat">
+              <div className="l">Puntuación</div>
+              <div className="v">
+                <span ref={scoreEl}>0</span>
+              </div>
+            </div>
+            <div className="hud-stat lives">
+              <div className="l">Vidas</div>
+              <div className="v">
+                <span ref={livesEl}>{livesLabel(START_LIVES)}</span>
+              </div>
+            </div>
+            <div className="hud-stat level">
+              <div className="l">Nivel</div>
+              <div className="v">
+                <span ref={levelEl}>01</span>
+              </div>
             </div>
           </div>
-          <div className="hud-stat">
-            <div className="l">Puntuación</div>
-            <div className="v">
-              <span ref={scoreEl}>0</span>
-            </div>
+          <div className="hud-actions">
+            <button className="btn yellow" onClick={() => setPaused((p) => !p)}>
+              {paused ? 'REANUDAR' : 'PAUSA'}
+            </button>
+            <button
+              className="btn magenta"
+              onClick={() => openGameOver(scoreRef.current)}
+            >
+              FIN
+            </button>
+            <Link href="/games/pac-man" className="btn ghost">
+              SALIR
+            </Link>
           </div>
-          <div className="hud-stat lives">
-            <div className="l">Vidas</div>
-            <div className="v">
-              <span ref={livesEl}>{livesLabel(START_LIVES)}</span>
-            </div>
-          </div>
-          <div className="hud-stat level">
-            <div className="l">Nivel</div>
-            <div className="v">
-              <span ref={levelEl}>01</span>
-            </div>
-          </div>
-        </div>
-        <div className="hud-actions">
-          <button className="btn yellow" onClick={() => setPaused((p) => !p)}>
-            {paused ? 'REANUDAR' : 'PAUSA'}
-          </button>
-          <button
-            className="btn magenta"
-            onClick={() => openGameOver(scoreRef.current)}
-          >
-            FIN
-          </button>
-          <Link href="/games/pac-man" className="btn ghost">
-            SALIR
-          </Link>
         </div>
       </div>
 
@@ -166,6 +171,15 @@ export default function PacManPlay() {
           <span>CARGA · 1MB</span>
         </div>
       </div>
+
+      <MobileGamepad
+        keyMap={keyMap}
+        paused={paused}
+        onPauseToggle={() => setPaused((p) => !p)}
+        skin="classic"
+        onSkinChange={() => {}} // TODO: cablear cuando se aplique skin-designer
+        backHref="/games/pac-man"
+      />
 
       {over && (
         <div className="modal-bd">
