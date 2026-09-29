@@ -1,6 +1,6 @@
 # SPEC — Integración del juego Pac-Man (laberinto + 4 fantasmas)
 
-> **Estado:** Approved
+> **Estado:** Implemented
 > **Depende de:** 06-games-table-leaderboard-supabase
 > **Fecha:** 2026-09-28
 > **Objetivo:** Integrar Pac-Man como juego jugable en Arcade Vault, con un laberinto
